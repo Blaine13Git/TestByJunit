@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="TestByJunit" default="test">  <!--指定了项目名称，设定了默认的目标以便测试-->
+    <property file="build.properties"/> <!--使用build.properties文件来保存不同位置的jar包-->
+    <property name="sourcelib.dir" location="libs"/>
+
+    <!--第三方jar包-->
+    <path id="lib.classpath">
+        <fileset dir="${sourcelib.dir}">
+            <include name="/*.jar"/>
+        </fileset>
+    </path>
+
+    <!--定义产品的目录和测试源代码的目录-->
+    <property name="src.dir" location="src"/>
+    <property name="src.java.dir" location="${src.dir}/main/java/"/>
+    <property name="src.test.dir" location="${src.dir}/test/java/"/>
+
+    <!--编译产品和测试代码的目录-->
+    <property name="target.dir" location="target"/>
+    <property name="target.classes.java.dir" location="${target.dir}/classes/"/>
+    <property name="target.classes.test.dir" location="${target.dir}/test-classes/"/>
+
+    <target name="compile.java">
+        <mkdir dir="${target.classes.java.dir}"/>
+        <javac destdir="${target.classes.java.dir}">
+            <compilerarg line="-encoding UTF-8"/>
+            <src path="${src.java.dir}"/>
+        </javac>
+    </target>
+
+    <target name="compile.test" depends="compile.java">
+        <mkdir dir="${target.classes.test.dir}"/>
+        <javac destdir="${target.classes.test.dir}">
+            <src path="${src.test.dir}"/>
+            <classpath>
+                <pathelement location="${target.classes.java.dir}"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="compile" depends="compile.java,compile.test"/>
+
+    <target name="test" depends="compile">
+        <junit printsummary="yes" haltonerror="yes" haltonfailure="yes" fork="yes"><!--fork="yes"强制ant为每个测试使用独立的jvm-->
+            <formatter type="plain" usefile="false"/>
+            <test name=""/>
+            <classpath>
+                <pathelement location="${target.classes.java.dir}"/>
+                <pathelement location="${target.classes.test.dir}"/>
+            </classpath>
+        </junit>
+    </target>
+</project>
